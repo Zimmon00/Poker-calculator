@@ -6,21 +6,23 @@
   <title>Poker Results Calculator</title>
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <style>
+    body { margin: 0; padding: 0; }
+  </style>
 </head>
 <body>
   <div id="root"></div>
-  <script type="text/babel">
-    const { Plus, Trash2, Calculator, DollarSign } = window.lucide;
+  <script>
+    const { createElement: h, useState } = React;
+    const { render } = ReactDOM;
 
     function PokerCalculator() {
-      const [buyIn, setBuyIn] = React.useState(100);
-      const [chipsPerBuyIn, setChipsPerBuyIn] = React.useState(2000);
-      const [players, setPlayers] = React.useState([]);
-      const [newPlayerName, setNewPlayerName] = React.useState('');
-      const [showResults, setShowResults] = React.useState(false);
+      const [buyIn, setBuyIn] = useState(100);
+      const [chipsPerBuyIn, setChipsPerBuyIn] = useState(2000);
+      const [players, setPlayers] = useState([]);
+      const [newPlayerName, setNewPlayerName] = useState('');
+      const [showResults, setShowResults] = useState(false);
 
       const addPlayer = () => {
         if (newPlayerName.trim()) {
@@ -101,186 +103,158 @@
 
       const results = showResults ? calculateResults() : null;
 
-      return (
-        <div className="min-h-screen bg-gradient-to-br from-green-900 via-green-800 to-emerald-900 p-4">
-          <div className="max-w-4xl mx-auto">
-            <div className="bg-white rounded-lg shadow-2xl p-6 mb-6">
-              <h1 className="text-3xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-                <DollarSign className="text-green-600" />
-                Poker Results Calculator
-              </h1>
+      return h('div', { className: 'min-h-screen bg-gradient-to-br from-green-900 via-green-800 to-emerald-900 p-4' },
+        h('div', { className: 'max-w-4xl mx-auto' },
+          h('div', { className: 'bg-white rounded-lg shadow-2xl p-6 mb-6' },
+            h('h1', { className: 'text-3xl font-bold text-gray-800 mb-6' }, '🎰 Poker Results Calculator'),
+            
+            h('div', { className: 'grid grid-cols-1 md:grid-cols-2 gap-4 mb-6' },
+              h('div', null,
+                h('label', { className: 'block text-sm font-medium text-gray-700 mb-2' }, 'Buy-in Amount (PLN)'),
+                h('input', {
+                  type: 'number',
+                  value: buyIn,
+                  onChange: (e) => setBuyIn(parseFloat(e.target.value) || 0),
+                  className: 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent'
+                })
+              ),
+              h('div', null,
+                h('label', { className: 'block text-sm font-medium text-gray-700 mb-2' }, 'Chips per Buy-in'),
+                h('input', {
+                  type: 'number',
+                  value: chipsPerBuyIn,
+                  onChange: (e) => setChipsPerBuyIn(parseFloat(e.target.value) || 2000),
+                  className: 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent'
+                })
+              )
+            ),
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Buy-in Amount (PLN)
-                  </label>
-                  <input
-                    type="number"
-                    value={buyIn}
-                    onChange={(e) => setBuyIn(parseFloat(e.target.value) || 0)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Chips per Buy-in
-                  </label>
-                  <input
-                    type="number"
-                    value={chipsPerBuyIn}
-                    onChange={(e) => setChipsPerBuyIn(parseFloat(e.target.value) || 2000)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                  />
-                </div>
-              </div>
+            h('div', { className: 'mb-6' },
+              h('label', { className: 'block text-sm font-medium text-gray-700 mb-2' }, 'Add Player'),
+              h('div', { className: 'flex gap-2' },
+                h('input', {
+                  type: 'text',
+                  value: newPlayerName,
+                  onChange: (e) => setNewPlayerName(e.target.value),
+                  onKeyPress: (e) => e.key === 'Enter' && addPlayer(),
+                  placeholder: 'Player name',
+                  className: 'flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent'
+                }),
+                h('button', {
+                  onClick: addPlayer,
+                  className: 'px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors'
+                }, '+ Add')
+              )
+            ),
 
-              <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Add Player
-                </label>
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={newPlayerName}
-                    onChange={(e) => setNewPlayerName(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && addPlayer()}
-                    placeholder="Player name"
-                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                  />
-                  <button
-                    onClick={addPlayer}
-                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2"
-                  >
-                    <Plus size={20} />
-                    Add
-                  </button>
-                </div>
-              </div>
+            players.length > 0 && h('div', null,
+              h('div', { className: 'overflow-x-auto mb-6' },
+                h('table', { className: 'w-full' },
+                  h('thead', { className: 'bg-gray-50' },
+                    h('tr', null,
+                      h('th', { className: 'px-4 py-3 text-left text-sm font-semibold text-gray-700' }, 'Player'),
+                      h('th', { className: 'px-4 py-3 text-left text-sm font-semibold text-gray-700' }, 'Buy-ins'),
+                      h('th', { className: 'px-4 py-3 text-left text-sm font-semibold text-gray-700' }, 'Final Chips'),
+                      h('th', { className: 'px-4 py-3 text-left text-sm font-semibold text-gray-700' }, 'Action')
+                    )
+                  ),
+                  h('tbody', { className: 'divide-y divide-gray-200' },
+                    players.map(player =>
+                      h('tr', { key: player.id, className: 'hover:bg-gray-50' },
+                        h('td', { className: 'px-4 py-3 font-medium text-gray-900' }, player.name),
+                        h('td', { className: 'px-4 py-3' },
+                          h('input', {
+                            type: 'number',
+                            value: player.buyIns,
+                            onChange: (e) => updatePlayer(player.id, 'buyIns', e.target.value),
+                            min: 1,
+                            className: 'w-20 px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-green-500 focus:border-transparent'
+                          })
+                        ),
+                        h('td', { className: 'px-4 py-3' },
+                          h('input', {
+                            type: 'number',
+                            value: player.finalChips,
+                            onChange: (e) => updatePlayer(player.id, 'finalChips', e.target.value),
+                            min: 0,
+                            className: 'w-24 px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-green-500 focus:border-transparent'
+                          })
+                        ),
+                        h('td', { className: 'px-4 py-3' },
+                          h('button', {
+                            onClick: () => removePlayer(player.id),
+                            className: 'text-red-600 hover:text-red-800 transition-colors text-xl'
+                          }, '🗑️')
+                        )
+                      )
+                    )
+                  )
+                )
+              ),
+              h('button', {
+                onClick: handleCalculate,
+                className: 'w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold'
+              }, '🧮 Calculate Results')
+            )
+          ),
 
-              {players.length > 0 && (
-                <>
-                  <div className="overflow-x-auto mb-6">
-                    <table className="w-full">
-                      <thead className="bg-gray-50">
-                        <tr>
-                          <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Player</th>
-                          <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Buy-ins</th>
-                          <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Final Chips</th>
-                          <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Action</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-gray-200">
-                        {players.map((player) => (
-                          <tr key={player.id} className="hover:bg-gray-50">
-                            <td className="px-4 py-3 font-medium text-gray-900">{player.name}</td>
-                            <td className="px-4 py-3">
-                              <input
-                                type="number"
-                                value={player.buyIns}
-                                onChange={(e) => updatePlayer(player.id, 'buyIns', e.target.value)}
-                                min="1"
-                                className="w-20 px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                              />
-                            </td>
-                            <td className="px-4 py-3">
-                              <input
-                                type="number"
-                                value={player.finalChips}
-                                onChange={(e) => updatePlayer(player.id, 'finalChips', e.target.value)}
-                                min="0"
-                                className="w-24 px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                              />
-                            </td>
-                            <td className="px-4 py-3">
-                              <button
-                                onClick={() => removePlayer(player.id)}
-                                className="text-red-600 hover:text-red-800 transition-colors"
-                              >
-                                <Trash2 size={18} />
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
+          results && h('div', { className: 'bg-white rounded-lg shadow-2xl p-6' },
+            h('h2', { className: 'text-2xl font-bold text-gray-800 mb-4' }, 'Results'),
+            
+            h('div', { className: 'mb-6' },
+              h('h3', { className: 'text-lg font-semibold text-gray-700 mb-3' }, 'Player Summary'),
+              h('div', { className: 'overflow-x-auto' },
+                h('table', { className: 'w-full' },
+                  h('thead', { className: 'bg-gray-50' },
+                    h('tr', null,
+                      h('th', { className: 'px-4 py-2 text-left text-sm font-semibold text-gray-700' }, 'Player'),
+                      h('th', { className: 'px-4 py-2 text-right text-sm font-semibold text-gray-700' }, 'Invested'),
+                      h('th', { className: 'px-4 py-2 text-right text-sm font-semibold text-gray-700' }, 'Final Value'),
+                      h('th', { className: 'px-4 py-2 text-right text-sm font-semibold text-gray-700' }, 'Net Result')
+                    )
+                  ),
+                  h('tbody', { className: 'divide-y divide-gray-200' },
+                    results.results.map(player =>
+                      h('tr', { key: player.id },
+                        h('td', { className: 'px-4 py-2 font-medium text-gray-900' }, player.name),
+                        h('td', { className: 'px-4 py-2 text-right text-gray-600' }, player.invested.toFixed(2) + ' PLN'),
+                        h('td', { className: 'px-4 py-2 text-right text-gray-600' }, player.finalValue.toFixed(2) + ' PLN'),
+                        h('td', { className: `px-4 py-2 text-right font-semibold ${player.netResult >= 0 ? 'text-green-600' : 'text-red-600'}` },
+                          (player.netResult >= 0 ? '+' : '') + player.netResult.toFixed(2) + ' PLN'
+                        )
+                      )
+                    )
+                  )
+                )
+              )
+            ),
 
-                  <button
-                    onClick={handleCalculate}
-                    className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 font-semibold"
-                  >
-                    <Calculator size={20} />
-                    Calculate Results
-                  </button>
-                </>
-              )}
-            </div>
+            results.transactions.length > 0 && h('div', null,
+              h('h3', { className: 'text-lg font-semibold text-gray-700 mb-3' }, 'Required Transactions'),
+              h('div', { className: 'space-y-3' },
+                results.transactions.map((t, i) =>
+                  h('div', { key: i, className: 'bg-blue-50 border border-blue-200 rounded-lg p-4' },
+                    h('p', { className: 'text-gray-800' },
+                      h('span', { className: 'font-semibold text-red-600' }, t.from),
+                      ' pays ',
+                      h('span', { className: 'font-bold text-blue-600' }, t.amount.toFixed(2) + ' PLN'),
+                      ' to ',
+                      h('span', { className: 'font-semibold text-green-600' }, t.to)
+                    )
+                  )
+                )
+              )
+            ),
 
-            {results && (
-              <div className="bg-white rounded-lg shadow-2xl p-6">
-                <h2 className="text-2xl font-bold text-gray-800 mb-4">Results</h2>
-                
-                <div className="mb-6">
-                  <h3 className="text-lg font-semibold text-gray-700 mb-3">Player Summary</h3>
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead className="bg-gray-50">
-                        <tr>
-                          <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Player</th>
-                          <th className="px-4 py-2 text-right text-sm font-semibold text-gray-700">Invested</th>
-                          <th className="px-4 py-2 text-right text-sm font-semibold text-gray-700">Final Value</th>
-                          <th className="px-4 py-2 text-right text-sm font-semibold text-gray-700">Net Result</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-gray-200">
-                        {results.results.map((player) => (
-                          <tr key={player.id}>
-                            <td className="px-4 py-2 font-medium text-gray-900">{player.name}</td>
-                            <td className="px-4 py-2 text-right text-gray-600">{player.invested.toFixed(2)} PLN</td>
-                            <td className="px-4 py-2 text-right text-gray-600">{player.finalValue.toFixed(2)} PLN</td>
-                            <td className={`px-4 py-2 text-right font-semibold ${player.netResult >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                              {player.netResult >= 0 ? '+' : ''}{player.netResult.toFixed(2)} PLN
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-
-                {results.transactions.length > 0 && (
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-700 mb-3">Required Transactions</h3>
-                    <div className="space-y-3">
-                      {results.transactions.map((t, i) => (
-                        <div key={i} className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                          <p className="text-gray-800">
-                            <span className="font-semibold text-red-600">{t.from}</span>
-                            {' pays '}
-                            <span className="font-bold text-blue-600">{t.amount.toFixed(2)} PLN</span>
-                            {' to '}
-                            <span className="font-semibold text-green-600">{t.to}</span>
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {results.transactions.length === 0 && (
-                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                    <p className="text-gray-600 text-center">No transactions needed - everyone broke even!</p>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
+            results.transactions.length === 0 && h('div', { className: 'bg-gray-50 border border-gray-200 rounded-lg p-4' },
+              h('p', { className: 'text-gray-600 text-center' }, 'No transactions needed - everyone broke even!')
+            )
+          )
+        )
       );
     }
 
-    ReactDOM.render(<PokerCalculator />, document.getElementById('root'));
+    render(h(PokerCalculator), document.getElementById('root'));
   </script>
 </body>
 </html>
